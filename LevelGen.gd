@@ -112,6 +112,7 @@ func _ready() -> void:
 	_pad(6, 6, 0, "goal")
 	_build_collision()
 	_build_chunk_meshes()
+	_build_decorations()
 	_build_light()
 	kill_y = _min_top - 12.0
 
@@ -528,6 +529,32 @@ func _build_finish_gate(pad_top_center: Vector3) -> void:
 		pillar.material_override = mat
 		pillar.position = pad_top_center + Vector3(px, 2.0, 0)
 		add_child(pillar)
+
+
+## Kenney Starter Kit decorations (CC0): grass tufts on pads, clouds above.
+## Visual only -- no collision, physics stays on the proven voxel terrain.
+func _build_decorations() -> void:
+	var cloud_scene: PackedScene = null
+	var grass_scene: PackedScene = null
+	if ResourceLoader.exists("res://assets/cloud.glb"):
+		cloud_scene = load("res://assets/cloud.glb")
+	if ResourceLoader.exists("res://assets/grass.glb"):
+		grass_scene = load("res://assets/grass.glb")
+	for i in range(nav.size()):
+		var p: Vector3 = nav[i]["pos"]
+		if grass_scene != null and i % 2 == 0:
+			var g := grass_scene.instantiate()
+			g.position = p + Vector3(1.6, -0.6, 0.0)
+			g.rotation.y = float(i) * 1.7
+			var gs := 0.8 + 0.3 * absf(sin(float(i)))
+			g.scale = Vector3(gs, gs, gs)
+			add_child(g)
+		if cloud_scene != null and i % 3 == 0:
+			var c := cloud_scene.instantiate()
+			c.position = p + Vector3(6.0 * sin(float(i) * 2.1), 11.0 + 2.0 * sin(float(i)), 6.0 * cos(float(i) * 1.3))
+			var cs := 1.5 + 0.5 * absf(sin(float(i) * 0.7))
+			c.scale = Vector3(cs, cs, cs)
+			add_child(c)
 
 
 func _build_light() -> void:

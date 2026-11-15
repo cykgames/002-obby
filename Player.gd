@@ -314,13 +314,16 @@ func _process(delta: float) -> void:
 	var active := started and not _dead
 	var hspeed := Vector2(velocity.x, velocity.z).length()
 	if hspeed > 0.5:
-		_facing = atan2(velocity.x, velocity.z) + PI
+		# Block character faces -Z; the Kenney glTF character faces +Z.
+		_facing = atan2(velocity.x, velocity.z) + (0.0 if _gltf_mode else PI)
 	_visual.rotation.y = lerp_angle(_visual.rotation.y, _facing, 0.2)
 	if _gltf_mode:
 		if _gltf_anim != null:
-			var want := "run" if (is_on_floor() and hspeed > 0.5 and active) else "idle"
-			if not _gltf_anim.has_animation(want):
-				want = "Idle" if want == "idle" else "Run"
+			var want := "idle"
+			if not is_on_floor():
+				want = "jump"
+			elif hspeed > 0.5 and active:
+				want = "walk"
 			if _gltf_anim.has_animation(want) and _gltf_anim.current_animation != want:
 				_gltf_anim.play(want)
 		if not is_on_floor():

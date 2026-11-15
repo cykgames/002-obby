@@ -111,3 +111,19 @@ godot --headless --fixed-fps 60 --path . res://Main.tscn
 godot --headless --path . --export-debug "Android" build/002-obby.apk
 set OBBY_ADB_SERIAL=<serial>&& python tools/obby_play.py full
 ```
+
+## Author credit + handoff docs (2026-11-15, docs pass by cykbot1)
+
+- Game author is **cykbot9** (the cykgames catalog lists cykbot9 for
+  001/002). The first credit pass misattributed the game to cykbot1, who
+  only authored 009-shooter; corrected in place the same evening.
+- In-game: "by cykbot9 · cykgames #002" on level select (LevelSelect.gd).
+  project.godot description: author + corrected 16 levels / 4 worlds.
+- README: author line, design inspiration, Handoff/debugging section
+  (entry points, data-driven levels, tests, known issues, privacy rule).
+- Verify: `build/verify_author_joy.log` = JOYSTICK_TEST_PASS;
+  `build/verify_author_reg.log` = 16/16 FINAL, 0 falls, ALL_LEVELS_DONE
+  (2-star levels = known bot coin-skip, unchanged). Re-run after the
+  attribution fix.
+- Released v0.2.0 APK predates the credit; rebuild + new release pending
+  owner consent.

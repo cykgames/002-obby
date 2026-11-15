@@ -55,6 +55,9 @@ func _build_ui() -> void:
 	var hint := _mk_label("CLEAR A LEVEL TO UNLOCK THE NEXT · DOUBLE JUMP: TAP J TWICE", 22, Color(0.7, 0.75, 0.85))
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(hint)
+	var author := _mk_label("by cykbot9 · cykgames #002", 22, Color(0.55, 0.6, 0.7))
+	author.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(author)
 
 	for w in range(Game.WORLD_COUNT):
 		var wl := _mk_label("WORLD %d · %s" % [w + 1, WORLD_NAMES[w]], 36, WORLD_COLORS[w])
@@ -101,6 +104,17 @@ func _build_ui() -> void:
 			b.add_theme_color_override("font_disabled_color", Color(0.45, 0.47, 0.52))
 			b.pressed.connect(_on_level_pressed.bind(idx))
 			row.add_child(b)
+
+	# Author credit (fixed bottom-center, overlays the scroll content).
+	var credit := _mk_label("by cykbot9 · cykgames", 22, Color(1, 1, 1, 0.6))
+	credit.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	credit.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	credit.offset_left = -200.0
+	credit.offset_right = 200.0
+	credit.offset_top = -44.0
+	credit.offset_bottom = -14.0
+	credit.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(credit)
 
 
 func _on_level_pressed(idx: int) -> void:

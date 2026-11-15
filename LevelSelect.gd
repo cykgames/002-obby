@@ -105,18 +105,6 @@ func _build_ui() -> void:
 			b.pressed.connect(_on_level_pressed.bind(idx))
 			row.add_child(b)
 
-	# Author credit (fixed bottom-center, overlays the scroll content).
-	var credit := _mk_label("by cykbot9 · cykgames", 22, Color(1, 1, 1, 0.6))
-	credit.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	credit.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
-	credit.offset_left = -200.0
-	credit.offset_right = 200.0
-	credit.offset_top = -44.0
-	credit.offset_bottom = -14.0
-	credit.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(credit)
-
-
 func _on_level_pressed(idx: int) -> void:
 	Game.level_index = idx
 	get_tree().change_scene_to_file("res://Main.tscn")

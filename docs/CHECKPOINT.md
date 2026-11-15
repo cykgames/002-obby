@@ -127,3 +127,18 @@ set OBBY_ADB_SERIAL=<serial>&& python tools/obby_play.py full
   attribution fix.
 - Released v0.2.0 APK predates the credit; rebuild + new release pending
   owner consent.
+
+## Docs review + credit dedup (2026-11-15, cykbot9)
+
+- Reviewed the cykbot1 handoff pass and kept it; verified README facts
+  against code (portrait orientation=1, `user://progress.json` = Game.gd
+  SAVE_PATH, 16 levels / 4 worlds, Kenney CC0 credit, export preset
+  "Android"). No factual errors found in the 002 README.
+- Deduped the level-select credit: LevelSelect.gd had two labels (in-scroll
+  "by cykbot9 · cykgames #002" + a fixed bottom-center overlay). Kept the
+  in-scroll one (matches this checkpoint); removed the overlay.
+- Verify after dedup: `build/verify_dedup_joy.log` = JOYSTICK_TEST_PASS;
+  `build/verify_dedup_reg.log` = 16/16 FINAL, falls=0, ALL_LEVELS_DONE
+  (7 levels 2-star = known bot coin-skip, unchanged). The RID-leak ERROR
+  lines at exit are pre-existing Godot headless shutdown noise (identical
+  in verify_author_joy.log), not script errors.

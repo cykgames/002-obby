@@ -1,10 +1,10 @@
 extends Node
 ## Autoload singleton: level index, progress (user://progress.json), unlocks.
-## 12 levels = 3 worlds x 4. Sequential unlock: clearing level N opens N+1.
+## 16 levels = 4 worlds x 4. Sequential unlock: clearing level N opens N+1.
 
 const SAVE_PATH := "user://progress.json"
-const LEVEL_COUNT := 12
-const WORLD_COUNT := 3
+const LEVEL_COUNT := 16
+const WORLD_COUNT := 4
 const PER_WORLD := 4
 
 var level_index := 0

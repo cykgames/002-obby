@@ -1,6 +1,25 @@
 # 002-obby — Build Checkpoint (2026-11-15)
 
-## Status: playable v0.1.0, 12/12 levels, published to cykgames/002-obby
+## Status: playable v0.2.0, 16/16 levels (4 worlds), published to cykgames/002-obby
+
+## v0.2.0 — World 4 VOLCANO (2026-11-15)
+
+- Content expansion: 12 -> 16 levels, 3 -> 4 worlds. New VOLCANO theme
+  (dark basalt terrain, glowing lava-red sky) + 4 levels: EMBER HOP (par 70),
+  MAGMA RUN (75), CRUMBLE PEAK (80), ERUPTION (90). Data-only addition to
+  LevelGen LEVELS/THEMES; no physics/engine changes.
+- Game.gd LEVEL_COUNT 16 / WORLD_COUNT 4; LevelSelect 4th world name/color,
+  subtitle now dynamic (WORLD_COUNT / LEVEL_COUNT / LEVEL_COUNT*3).
+- Headless regression build/regression5.log: 16/16 FINAL, 0 falls every level,
+  ALL_LEVELS_DONE, no errors. World 4: EMBER HOP / CRUMBLE PEAK 3-star,
+  MAGMA RUN / ERUPTION 2-star (bot coin-skip on mover/bounce, same as worlds 1-3).
+- On-device A54 (USB): install Success; select shows 4 worlds / 16 levels /
+  STARS x/48; VOLCANO theme renders (basalt + lava + red sky); EMBER HOP plays
+  (TIME running, no crash); sequential unlock verified via a temporary save
+  (original save restored afterward). Shots: docs/screenshots/level_select.png
+  (4 worlds), volcano_gameplay.png.
+- APK 31.3 MB arm64 debug-signed; release v0.2.0.
+- A57 gameplay still pending owner unlock (device offline this session).
 
 ## What was built
 

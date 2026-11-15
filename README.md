@@ -1,10 +1,10 @@
 # 002 · Obby World
 
 Roblox-style block obstacle course ("obby") for Android, built with Godot 4.7.
-Omnidirectional joystick movement + double jump across 12 handcrafted levels
-in 3 themed worlds, with checkpoints, coins, par times and a 3-star rating.
+Omnidirectional joystick movement + double jump across 16 handcrafted levels
+in 4 themed worlds, with checkpoints, coins, par times and a 3-star rating.
 
-Status: playable (v0.1.0)
+Status: playable (v0.2.0)
 Engine: Godot 4.7.2 (GL Compatibility)
 Platform: Android (arm64-v8a), portrait
 
@@ -12,6 +12,7 @@ Part of the [cykgames](https://github.com/cykgames) catalog.
 
 ![level select](docs/screenshots/level_select.png)
 ![gameplay](docs/screenshots/gameplay_checkpoint.png)
+![volcano world](docs/screenshots/volcano_gameplay.png)
 ![level clear](docs/screenshots/level_clear.png)
 
 ## Controls
@@ -25,7 +26,7 @@ Part of the [cykgames](https://github.com/cykgames) catalog.
 
 ## Gameplay
 
-- 3 worlds x 4 levels = 12 levels, sequential unlock (clear a level to open
+- 4 worlds x 4 levels = 16 levels, sequential unlock (clear a level to open
   the next). Progress (stars / best time / coins) persists in `user://progress.json`.
 - Stars: 1 for clearing, +1 for collecting every coin, +1 for finishing under par.
 - Checkpoints: flag beacons turn green when reached; falling into lava or the
@@ -41,6 +42,7 @@ Part of the [cykgames](https://github.com/cykgames) catalog.
 | 1 Meadow | First Steps, Lava Hop, Bounce House, Moving On | grass / blue sky |
 | 2 Canyon | Vanish Path, Spin Zone, Ice Slide, Canyon Mix | sandstone / sunset |
 | 3 Frost | Frost Vanish, Sky Spin, Lava Gauntlet, Final Climb | ice / night sky |
+| 4 Volcano | Ember Hop, Magma Run, Crumble Peak, Eruption | basalt / lava glow |
 
 Levels are data-driven: `LevelGen.gd` holds a `LEVELS` table of path steps
 (`P` pad, `G` gap, `L` lava, `M` mover, `B` bounce, `V` vanish, `S` spinner,

@@ -1,9 +1,9 @@
 extends Control
-## Level select: 3 worlds x 4 levels, stars, sequential unlock, total stars.
+## Level select: 4 worlds x 4 levels, stars, sequential unlock, total stars.
 ## All UI built in code. Tap an unlocked level -> Main.tscn.
 
-const WORLD_NAMES := ["MEADOW", "CANYON", "FROST"]
-const WORLD_COLORS := [Color(0.35, 0.75, 0.25), Color(0.85, 0.62, 0.32), Color(0.55, 0.75, 0.95)]
+const WORLD_NAMES := ["MEADOW", "CANYON", "FROST", "VOLCANO"]
+const WORLD_COLORS := [Color(0.35, 0.75, 0.25), Color(0.85, 0.62, 0.32), Color(0.55, 0.75, 0.95), Color(0.95, 0.45, 0.15)]
 
 
 func _ready() -> void:
@@ -49,7 +49,7 @@ func _build_ui() -> void:
 	var title := _mk_label("OBBY WORLD", 72)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(title)
-	var sub := _mk_label("3 WORLDS · 12 LEVELS · STARS %d/36" % Game.total_stars(), 30, Color(1.0, 0.85, 0.2))
+	var sub := _mk_label("%d WORLDS · %d LEVELS · STARS %d/%d" % [Game.WORLD_COUNT, Game.LEVEL_COUNT, Game.total_stars(), Game.LEVEL_COUNT * 3], 30, Color(1.0, 0.85, 0.2))
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(sub)
 	var hint := _mk_label("CLEAR A LEVEL TO UNLOCK THE NEXT · DOUBLE JUMP: TAP J TWICE", 22, Color(0.7, 0.75, 0.85))

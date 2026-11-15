@@ -2,3 +2,4 @@
 build/
 *.tmp
 assets_raw/
+docs/screenshots/*.import

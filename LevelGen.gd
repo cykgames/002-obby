@@ -1,6 +1,6 @@
 extends Node3D
 class_name LevelGen
-## Data-driven obby course builder: 12 levels (3 worlds x 4), parkour-style
+## Data-driven obby course builder: 16 levels (4 worlds x 4), parkour-style
 ## LEVELS table. A cursor walks a 4-direction path; steps place pads/hazards.
 ## Static terrain: one StaticBody3D + chunked ArrayMesh (vertex colors).
 ## Mechanics: moving platforms (AnimatableBody3D), lava (Area3D kill),
@@ -34,6 +34,13 @@ const THEMES := [
 		"stone": Color(0.60, 0.70, 0.82), "mover_col": Color(0.30, 0.65, 0.80),
 		"sky_top": Color(0.10, 0.14, 0.30), "sky_horizon": Color(0.35, 0.45, 0.65),
 		"sun": Color(0.75, 0.85, 1.0), "sun_rot": Vector3(-60, 20, 0),
+	},
+	{
+		"name": "VOLCANO",
+		"grass": Color(0.30, 0.22, 0.24), "dirt": Color(0.16, 0.12, 0.14),
+		"stone": Color(0.40, 0.28, 0.28), "mover_col": Color(0.95, 0.45, 0.10),
+		"sky_top": Color(0.12, 0.04, 0.07), "sky_horizon": Color(0.65, 0.22, 0.10),
+		"sun": Color(1.0, 0.60, 0.30), "sun_rot": Vector3(-40, -20, 0),
 	},
 ]
 
@@ -77,6 +84,19 @@ const LEVELS := [
 		["G", 2.5], ["P", 4, 4], ["T", 1], ["G", 3.0], ["P", 4, 6], ["M", 6.5],
 		["P", 4, 4], ["T", 1], ["L", 3.0], ["P", 4, 6], ["S", 7], ["B"],
 		["G", 2.5], ["P", 4, 6, 2], ["G", 2.5], ["P", 4, 4, -2]]},
+	{"name": "EMBER HOP", "world": 3, "par": 70.0, "steps": [
+		["G", 2.5], ["P", 4, 6], ["L", 3.0], ["P", 4, 6], ["L", 3.5],
+		["P", 4, 6], ["G", 3.0], ["P", 4, 8], ["L", 3.0], ["P", 4, 6]]},
+	{"name": "MAGMA RUN", "world": 3, "par": 75.0, "steps": [
+		["G", 2.5], ["P", 4, 6], ["M", 6.5], ["P", 4, 4], ["L", 3.0], ["P", 4, 6],
+		["M", 6.5], ["P", 4, 4], ["B"], ["G", 2.5], ["P", 4, 6, 2], ["G", 2.5], ["P", 4, 8, -2]]},
+	{"name": "CRUMBLE PEAK", "world": 3, "par": 80.0, "steps": [
+		["G", 2.5], ["I", 4, 8], ["V", 3], ["P", 4, 6], ["S", 7], ["G", 3.0],
+		["P", 4, 6], ["V", 3], ["I", 4, 8], ["P", 4, 8]]},
+	{"name": "ERUPTION", "world": 3, "par": 90.0, "steps": [
+		["G", 2.5], ["P", 4, 4], ["T", 1], ["G", 3.0], ["P", 4, 6], ["L", 3.0],
+		["P", 4, 4], ["M", 6.5], ["P", 4, 4], ["T", 1], ["S", 7], ["B"],
+		["G", 2.5], ["P", 4, 6, 2], ["G", 2.5], ["P", 4, 6, -2], ["L", 3.0], ["P", 4, 8]]},
 ]
 
 var cfg: Dictionary

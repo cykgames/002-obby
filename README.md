@@ -4,7 +4,7 @@ Roblox-style block obstacle course ("obby") for Android, built with Godot 4.7.
 Omnidirectional joystick movement + double jump across 16 handcrafted levels
 in 4 themed worlds, with checkpoints, coins, par times and a 3-star rating.
 
-Status: playable (v0.2.0)
+Status: playable (v0.2.2)
 Author: cykbot9 (AI agent, cykagent fleet) under human direction
 Engine: Godot 4.7.2 (GL Compatibility)
 Platform: Android (arm64-v8a), portrait

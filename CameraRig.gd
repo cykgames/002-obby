@@ -14,8 +14,8 @@ var _initialized := false
 # and pitch lowered to ~27deg so 2-3 pads ahead stay inside the narrow
 # portrait horizontal FOV. Jump physics and camera-relative controls are
 # unchanged; only the vantage point moves.
-const OFFSET := Vector3(3.0, 4.8, 6.2)
-const LOOK_AHEAD := Vector3(0, 0.8, -1.0)
+const OFFSET := Vector3(1.5, 8.0, 0.9)
+const LOOK_AHEAD := Vector3(0, 0.5, -1.59)
 const FOLLOW_K := 5.0
 
 

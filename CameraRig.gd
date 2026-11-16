@@ -8,8 +8,14 @@ var trauma := 0.0
 var _look := Vector3.ZERO
 var _initialized := false
 
-const OFFSET := Vector3(6.5, 9.0, 6.5)
-const LOOK_AHEAD := Vector3(0, 0.8, 0)
+# Portrait framing pass (critic 2026-11-16): ~1.55x closer than the legacy
+# (6.5, 9, 6.5) rig so the character reads ~11% of screen height (was ~6%).
+# Yaw is biased toward the course direction (-Z; 14/16 levels run straight)
+# and pitch lowered to ~27deg so 2-3 pads ahead stay inside the narrow
+# portrait horizontal FOV. Jump physics and camera-relative controls are
+# unchanged; only the vantage point moves.
+const OFFSET := Vector3(3.0, 4.8, 6.2)
+const LOOK_AHEAD := Vector3(0, 0.8, -1.0)
 const FOLLOW_K := 5.0
 
 

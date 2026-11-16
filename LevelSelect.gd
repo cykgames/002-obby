@@ -40,13 +40,18 @@ func _build_ui() -> void:
 	margin.add_theme_constant_override("margin_top", 40)
 	margin.add_theme_constant_override("margin_bottom", 40)
 	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.add_child(margin)
 	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 26)
+	vbox.add_theme_constant_override("separation", 34)
 	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	# Center vertically: portrait screens previously left ~52% dead space
+	# below the four world rows.
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	margin.add_child(vbox)
 
-	var title := _mk_label("OBBY WORLD", 72)
+	var title := _mk_label("OBBY WORLD", 84)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(title)
 	var sub := _mk_label("%d WORLDS · %d LEVELS · STARS %d/%d" % [Game.WORLD_COUNT, Game.LEVEL_COUNT, Game.total_stars(), Game.LEVEL_COUNT * 3], 30, Color(1.0, 0.85, 0.2))
@@ -60,10 +65,10 @@ func _build_ui() -> void:
 	vbox.add_child(author)
 
 	for w in range(Game.WORLD_COUNT):
-		var wl := _mk_label("WORLD %d · %s" % [w + 1, WORLD_NAMES[w]], 36, WORLD_COLORS[w])
+		var wl := _mk_label("WORLD %d · %s" % [w + 1, WORLD_NAMES[w]], 42, WORLD_COLORS[w])
 		vbox.add_child(wl)
 		var row := HBoxContainer.new()
-		row.add_theme_constant_override("separation", 20)
+		row.add_theme_constant_override("separation", 24)
 		row.alignment = BoxContainer.ALIGNMENT_CENTER
 		vbox.add_child(row)
 		for i in range(Game.PER_WORLD):
@@ -77,8 +82,9 @@ func _build_ui() -> void:
 				b.text = "%d-%d\n%s\n%s" % [w + 1, i + 1, lname, star_text]
 			else:
 				b.text = "%d-%d\nLOCKED" % [w + 1, i + 1]
-			b.add_theme_font_size_override("font_size", 26)
-			b.custom_minimum_size = Vector2(260, 150)
+			b.add_theme_font_size_override("font_size", 30)
+			b.custom_minimum_size = Vector2(240, 230)
+			b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			b.disabled = not unlocked
 			var sb := StyleBoxFlat.new()
 			if unlocked:

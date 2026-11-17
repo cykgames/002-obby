@@ -10,6 +10,9 @@ const PER_WORLD := 4
 var level_index := 0
 var headless := false
 var progress := {}
+## W1 test-only guard: harness sets true to block all progress writes.
+## Default false -> gameplay/save behavior unchanged.
+var test_no_save := false
 
 
 func _ready() -> void:
@@ -53,6 +56,8 @@ func total_stars() -> int:
 ## Store the best result per level (max stars, min time, max coins).
 ## Returns true if anything improved.
 func save_level_result(idx: int, time: float, stars: int, coins: int) -> bool:
+	if test_no_save:
+		return false
 	var key := str(idx)
 	var prev := best_for(idx)
 	var improved := false

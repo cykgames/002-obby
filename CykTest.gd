@@ -364,6 +364,13 @@ func _emit_sample() -> void:
 	d["jumps"] = jump_ring.seq()
 	d["jump_held"] = Input.is_action_pressed("jump")
 	d["fps"] = snappedf(Performance.get_monitor(Performance.TIME_FPS), 0.1)
+	# W2e test-only forward display transform evidence (viewport->screen):
+	# origin + basis columns. The host derives the rigid display->receipt
+	# offset from the run; this records the transform for the probe gate.
+	var xf := get_viewport().get_screen_transform()
+	d["xform"] = [snappedf(xf.origin.x, 0.01), snappedf(xf.origin.y, 0.01),
+		snappedf(xf.x.x, 0.0001), snappedf(xf.x.y, 0.0001),
+		snappedf(xf.y.x, 0.0001), snappedf(xf.y.y, 0.0001)]
 	d["wm"] = {
 		"input": input_ring.watermark(), "route": route_ring.watermark(),
 		"apply": apply_ring.watermark(), "jump": jump_ring.watermark()}

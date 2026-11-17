@@ -110,6 +110,147 @@ func jump_push(jumps: int, source_seq: int) -> void:
 		"ver": int(_version["jump"]), "st": "applied"})
 
 
+# --------------------------------------------------------------------------- #
+# W2 J GUI bridge (test-only non-consuming observers; plan v4.17 R7/R8/R9).
+# gui_input fires before native GUI processing -> is_pressed() is the pre-
+# transition state. The GUI clone's cyk_seq meta (merge_meta_from) bridges to
+# the arrival seq. Context lifetime = current input dispatch; cleared every
+# _process tick (frame-boundary witness) and replaced by the next gui_input.
+# --------------------------------------------------------------------------- #
+var pending_jump_token = null   # {src, up, ver} consumed by jump_applied
+var jump_count := 0
+var _pending_bridge = null      # emulated provisional bridge awaiting finalize
+
+
+func gui_observe(event: InputEvent, control: BaseButton) -> void:
+	var kind := ""
+	var pressed := false
+	var pos := Vector2.ZERO
+	if event is InputEventScreenTouch:
+		kind = "touch"
+		pressed = event.pressed
+		pos = event.position
+	elif event is InputEventMouseButton:
+		kind = "mouse"
+		pressed = event.pressed
+		pos = event.position
+	elif event is InputEventMouseMotion:
+		kind = "mouse_motion"
+		pos = event.position
+	else:
+		return
+	var cyk := -1
+	if event.has_meta("cyk_seq"):
+		cyk = int(event.get_meta("cyk_seq"))
+	var disp := get_viewport().get_screen_transform() * pos
+	gui_context = {
+		"gui_eid": event.get_instance_id(), "gui_cyk_seq": cyk, "gui_kind": kind,
+		"gui_pressed": pressed, "gui_x": snappedf(disp.x, 0.01),
+		"gui_y": snappedf(disp.y, 0.01), "gui_up": up(),
+		"control_id": control.get_instance_id(),
+		"prev_pressed": control.is_pressed(), "disabled": control.disabled}
+
+
+func _bridge_receipt(ctx: Dictionary, source_seq: int, path: String,
+		status: String, mouse_seq: int, finalized_up: int) -> Dictionary:
+	return {"gui_eid": ctx["gui_eid"], "gui_cyk_seq": ctx["gui_cyk_seq"],
+		"control_id": ctx["control_id"], "gui_kind": ctx["gui_kind"],
+		"gui_pressed": ctx["gui_pressed"], "gui_x": ctx["gui_x"],
+		"gui_y": ctx["gui_y"], "gui_up": ctx["gui_up"], "src": source_seq,
+		"path": path, "mouse_seq": mouse_seq, "status": status,
+		"finalized_up": finalized_up}
+
+
+func button_down_observe(control: BaseButton) -> void:
+	var ctx = gui_context
+	gui_context = null   # consume: one context per dispatch
+	var action_up := up()
+	if ctx == null or ctx["control_id"] != control.get_instance_id():
+		route_push("jump", -1, 1, false, null,
+			{"status": "unattributed", "reason": "no_context"})
+		return
+	# pressed-transition witness (false->true) + disabled guard at signal time
+	if ctx["disabled"] or control.disabled or ctx["prev_pressed"] != false \
+			or control.is_pressed() != true:
+		route_push("jump", -1, 1, false, null,
+			{"status": "unattributed", "reason": "transition_or_disabled"})
+		return
+	if ctx["gui_kind"] == "touch" and ctx["gui_cyk_seq"] >= 0:
+		# native_meta: clone cyk_seq IS the source arrival seq (dual idx1 path)
+		var src: int = ctx["gui_cyk_seq"]
+		var br := _bridge_receipt(ctx, src, "native_meta", "finalized", -1, action_up)
+		route_push("jump", src, 1, true, true, br)
+		pending_jump_token = {"src": src, "up": action_up, "ver": int(_version["jump"])}
+	elif ctx["gui_kind"] == "mouse" and ctx["gui_cyk_seq"] >= 0:
+		# emulated adjacency (J-only idx0): source touch seq = mouse_seq + 1.
+		# Provisional until the touch arrival is observed; finalize in _process.
+		var mouse_seq: int = ctx["gui_cyk_seq"]
+		_pending_bridge = {"ctx": ctx, "mouse_seq": mouse_seq, "action_up": action_up}
+		_try_finalize_emulated()
+	else:
+		route_push("jump", -1, 1, false, null,
+			{"status": "invalid", "reason": "no_cyk_seq"})
+
+
+func _try_finalize_emulated() -> void:
+	if _pending_bridge == null:
+		return
+	var ctx: Dictionary = _pending_bridge["ctx"]
+	var mouse_seq: int = _pending_bridge["mouse_seq"]
+	var action_up: int = _pending_bridge["action_up"]
+	var touch_seq := mouse_seq + 1
+	var te = input_ring.find("s", touch_seq)
+	var ok := false
+	if te != null and te["k"] == "touch_down" and te["i"] == 0:
+		if absf(float(te["x"]) - float(ctx["gui_x"])) <= 2.0 \
+				and absf(float(te["y"]) - float(ctx["gui_y"])) <= 2.0:
+			ok = true
+	if ok:
+		var br := _bridge_receipt(ctx, touch_seq, "emulated_adjacency",
+			"finalized", mouse_seq, up())
+		br["adjacency_verified"] = true
+		route_push("jump", touch_seq, 1, true, true, br)
+		pending_jump_token = {"src": touch_seq, "up": action_up, "ver": int(_version["jump"])}
+		_pending_bridge = null
+	elif up() - action_up > 500:
+		# collection window elapsed without a matching touch arrival -> invalid
+		var br := _bridge_receipt(ctx, -1, "emulated_adjacency", "invalid", mouse_seq, up())
+		route_push("jump", -1, 1, false, null, br)
+		_pending_bridge = null
+
+
+func button_up_observe(control: BaseButton) -> void:
+	var ctx = gui_context
+	gui_context = null
+	var action_up := up()
+	if ctx == null or ctx["control_id"] != control.get_instance_id():
+		route_push("jump", -1, 1, false, null,
+			{"status": "unattributed", "reason": "no_context_up"})
+		return
+	if ctx["disabled"] or control.disabled or ctx["prev_pressed"] != true \
+			or control.is_pressed() != false:
+		route_push("jump", -1, 1, false, null,
+			{"status": "unattributed", "reason": "transition_or_disabled_up"})
+		return
+	# UP release predicate: route-release token (no jump_log requirement).
+	var src: int = ctx["gui_cyk_seq"] if ctx["gui_cyk_seq"] >= 0 else -1
+	var path := "native_meta" if ctx["gui_kind"] == "touch" else "emulated_adjacency"
+	var br := _bridge_receipt(ctx, src, path, "finalized", -1, action_up)
+	br["release"] = true
+	route_push("jump", src, 1, true, false, br)
+
+
+func jump_applied() -> void:
+	jump_count += 1
+	if pending_jump_token != null:
+		var src: int = pending_jump_token["src"]
+		pending_jump_token = null
+		jump_push(jump_count, src)
+	else:
+		# no attributable press token -> conservative unattributed applied row
+		jump_push(jump_count, -1)
+
+
 func _input(event: InputEvent) -> void:
 	# Non-consuming arrival observer. Records a receipt and tags the event with
 	# namespaced test-only metadata cyk_seq (survives GUI xformed_by clones via
@@ -146,6 +287,7 @@ func _process(delta: float) -> void:
 	# frame-boundary witness: clear the J GUI context EVERY tick (autoload
 	# _process runs before scene nodes; probe verifies ordering).
 	gui_context = null
+	_try_finalize_emulated()
 	_drain_ring(input_ring)
 	_drain_ring(route_ring)
 	_drain_ring(apply_ring)

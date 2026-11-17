@@ -33,6 +33,7 @@ var _pause_panel: ColorRect
 var _flash: ColorRect
 var _joy: Joystick
 var _start_banner: PanelContainer
+var _move_src := -1   # W2: last accepted move route source arrival seq
 
 @onready var player: CharacterBody3D = get_parent().get_node("Player")
 
@@ -40,6 +41,11 @@ var _start_banner: PanelContainer
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_build_ui()
+	# W2 test-only receipt hooks (read-only observers; never change routing).
+	_jump_button.gui_input.connect(_on_jump_gui_input)
+	if player != null:
+		player.jumped.connect(_on_player_jumped)
+		player.double_jumped.connect(_on_player_jumped)
 	if DisplayServer.get_name() == "headless":
 		start_run()
 	else:
@@ -47,6 +53,25 @@ func _ready() -> void:
 		# scene and the run auto-starts after a short non-blocking banner.
 		# Stick/jump input starts it even earlier (see _on_stick_pressed).
 		get_tree().create_timer(1.5).timeout.connect(start_run)
+
+
+## W2 J GUI bridge observer: gui_input fires BEFORE native GUI processing, so
+## is_pressed() here is the pre-transition state. Records the synchronous
+## dispatch context (clone cyk_seq meta survives xformed_by). Non-consuming.
+func _on_jump_gui_input(event: InputEvent) -> void:
+	CykTest.gui_observe(event, _jump_button)
+
+
+func _on_player_jumped() -> void:
+	CykTest.jump_applied()
+
+
+## W2 move route token: emitted only on an accepted stick write, with the
+## exact arrival seq looked up by event instance id at synchronous entry.
+func _move_route(event: InputEvent) -> void:
+	var src := CykTest.lookup_input_seq(event.get_instance_id())
+	_move_src = src
+	CykTest.route_push("move", src, 0, true, [_joy.output.x, _joy.output.y])
 
 
 func _mk_label(text: String, size: int) -> Label:
@@ -278,6 +303,7 @@ func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("pause"):
 		toggle_pause()
 	player.input_dir = _joy.output
+	CykTest.apply_push("move", _move_src, [_joy.output.x, _joy.output.y])
 	if running:
 		time += delta
 		_time_label.text = "TIME %05.1f" % time
@@ -298,13 +324,16 @@ func _unhandled_input(event: InputEvent) -> void:
 		if touch.pressed:
 			if _joy.touch_index() == -1 and _joy.can_activate(lp):
 				_joy.press_at(lp, touch.index)
+				_move_route(event)
 		elif touch.index == _joy.touch_index():
 			_joy.release_touch()
+			_move_route(event)
 		return
 	var drag := event as InputEventScreenDrag
 	if drag != null and drag.index == _joy.touch_index():
 		var lp := _joy.get_global_transform_with_canvas().affine_inverse() * drag.position
 		_joy.drag_to(lp)
+		_move_route(event)
 
 
 func get_time() -> float:
@@ -411,7 +440,9 @@ func _on_jump_down() -> void:
 	if not started:
 		start_run()
 	Input.action_press("jump")
+	CykTest.button_down_observe(_jump_button)
 
 
 func _on_jump_up() -> void:
 	Input.action_release("jump")
+	CykTest.button_up_observe(_jump_button)

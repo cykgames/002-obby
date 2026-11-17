@@ -83,7 +83,7 @@ func _frames(n: int) -> void:
 
 
 func _ready() -> void:
-	get_window().size = Vector2i(1080, 2400)
+	get_window().size = Vector2i(1080, 2340)
 	Game.level_index = 0
 	_save_before = _save_sig()
 

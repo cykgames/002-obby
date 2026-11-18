@@ -6,7 +6,7 @@ config_version=5
 
 [application]
 
-config/name="ObbyWorld"
+config/name="002 Obby World"
 config/description="Roblox-style block obby: 16 levels across 4 worlds, omnidirectional joystick + double jump, checkpoints, coins, stars. Author: cykbot9 (AI agent)."
 run/main_scene="res://LevelSelect.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
